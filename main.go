@@ -19,17 +19,13 @@ var build = "develop"
 func main() {
 	var cfg struct {
 		Web struct {
-			APIHost         string        `default:"0.0.0.0:3000" envconfig:"API_HOST"`
-			DebugHost       string        `default:"0.0.0.0:4000" envconfig:"DEBUG_HOST"`
+			APIPort         string        `default:"3000" envconfig:"PORT"`
+			DebugPort       string        `default:"4000" envconfig:"DEBUG_PORT"`
+			APIHost         string        `default:"0.0.0.0" envconfig:"API_HOST"`
+			DebugHost       string        `default:"0.0.0.0" envconfig:"DEBUG_HOST"`
 			ReadTimeout     time.Duration `default:"5s" envconfig:"READ_TIMEOUT"`
 			WriteTimeout    time.Duration `default:"5s" envconfig:"WRITE_TIMEOUT"`
 			ShutdownTimeout time.Duration `default:"5s" envconfig:"SHUTDOWN_TIMEOUT"`
-		}
-		Trace struct {
-			Host         string        `default:"http://tracer:3002/v1/publish" envconfig:"HOST"`
-			BatchSize    int           `default:"1000" envconfig:"BATCH_SIZE"`
-			SendInterval time.Duration `default:"15s" envconfig:"SEND_INTERVAL"`
-			SendTimeout  time.Duration `default:"500ms" envconfig:"SEND_TIMEOUT"`
 		}
 	}
 
@@ -48,7 +44,7 @@ func main() {
 	// /debug/pprof - Added to the default mux by the net/http/pprof package.
 
 	debug := http.Server{
-		Addr:           cfg.Web.DebugHost,
+		Addr:           cfg.Web.DebugHost + ":" + cfg.Web.DebugPort,
 		Handler:        http.DefaultServeMux,
 		ReadTimeout:    cfg.Web.ReadTimeout,
 		WriteTimeout:   cfg.Web.WriteTimeout,
@@ -58,7 +54,7 @@ func main() {
 	// Not concerned with shutting this down when the
 	// application is being shutdown.
 	go func() {
-		log.Infof("main : Debug Listening %s", cfg.Web.DebugHost)
+		log.Infof("main : Debug Listening %s", cfg.Web.DebugHost+":"+cfg.Web.DebugPort)
 		log.Infof("main : Debug Listener closed : %v", debug.ListenAndServe())
 	}()
 
@@ -69,7 +65,7 @@ func main() {
 	r.Use(loggingMiddleware)
 
 	api := http.Server{
-		Addr:           cfg.Web.APIHost,
+		Addr:           cfg.Web.APIHost + ":" + cfg.Web.APIPort,
 		Handler:        r,
 		ReadTimeout:    cfg.Web.ReadTimeout,
 		WriteTimeout:   cfg.Web.WriteTimeout,
@@ -82,7 +78,7 @@ func main() {
 
 	// Start the service listening for requests.
 	go func() {
-		log.Infof("main : API Listening %s", cfg.Web.APIHost)
+		log.Infof("main : API Listening %s", cfg.Web.APIHost+":"+cfg.Web.APIPort)
 		serverErrors <- api.ListenAndServe()
 	}()
 
