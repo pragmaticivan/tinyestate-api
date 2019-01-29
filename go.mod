@@ -9,10 +9,13 @@ require (
 	github.com/go-openapi/jsonreference v0.18.0 // indirect
 	github.com/go-openapi/spec v0.18.0 // indirect
 	github.com/golang/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
+	github.com/gorilla/mux v1.7.0
+	github.com/kelseyhightower/envconfig v1.3.0
 	github.com/kisielk/errcheck v1.2.0 // indirect
 	github.com/mattn/go-shellwords v1.0.3 // indirect
 	github.com/mattn/goveralls v0.0.2 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/sirupsen/logrus v1.3.0
 	github.com/swaggo/swag v1.4.0 // indirect
 	github.com/urfave/cli v1.20.0 // indirect
 	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect

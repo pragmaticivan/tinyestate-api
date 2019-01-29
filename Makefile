@@ -22,10 +22,13 @@ coverage.coveralls:
 watch:
 	gin run main.go
 
+run:
+	go run main.go
+
 db.create:
 	soda create -a
 
 db.migrate:
 	soda migrate up
 
-.PHONY: install watch test list-packages dev-dependencies db.create db.migrate coverage
+.PHONY: install watch run test list-packages dev-dependencies db.create db.migrate coverage
