@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinyestate-api-deployment
+  labels:
+    app: tinyestate-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tinyestate-api
+  template:
+    metadata:
+      labels:
+        app: tinyestate-api
+    spec:
+      containers:
+      - name: tinyestate-api
+        image: tinyestate-api
+        ports:
+        - containerPort: 3000
+        - containerPort: 4000
+        env:
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: tinyestate-api-secret
+              key: db_password
+      - name: tinyestate-api-db
+        image: postgres
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tinyestate-api-secret
+              key: db_password
+        - name: POSTGRES_USER
+          value: tinyestate
+
