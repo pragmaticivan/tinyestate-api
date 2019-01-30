@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pragmaticivan/tinyestate-api/city"
 	"github.com/pragmaticivan/tinyestate-api/domain"
-	"github.com/pragmaticivan/tinyestate-api/state"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,16 +16,16 @@ const (
 	timeFormat = "2006-01-02T15:04:05.999Z07:00" // reduce precision from RFC3339Nano as date format
 )
 
-type postgresStateRepository struct {
+type postgresCityRepository struct {
 	Conn *sql.DB
 }
 
-// NewPostgresStateRepository will create an object that represent the state.Repository interface
-func NewPostgresStateRepository(Conn *sql.DB) state.Repository {
-	return &postgresStateRepository{Conn}
+// NewPostgresCityRepository will create an object that represent the city.Repository interface
+func NewPostgresCityRepository(Conn *sql.DB) city.Repository {
+	return &postgresCityRepository{Conn}
 }
 
-func (m *postgresStateRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*domain.State, error) {
+func (m *postgresCityRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*domain.City, error) {
 
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 
@@ -40,13 +40,15 @@ func (m *postgresStateRepository) fetch(ctx context.Context, query string, args 
 			log.Fatal(err)
 		}
 	}()
-	result := make([]*domain.State, 0)
+	result := make([]*domain.City, 0)
 	for rows.Next() {
-		t := new(domain.State)
+		t := new(domain.City)
 		err = rows.Scan(
 			&t.ID,
 			&t.Name,
-			&t.Abbreviation,
+			&t.AllowsOnWheels,
+			&t.AllowsOnFoundation,
+			&t.RequiresCareGiver,
 			&t.UpdatedAt,
 			&t.CreatedAt,
 		)
@@ -55,16 +57,16 @@ func (m *postgresStateRepository) fetch(ctx context.Context, query string, args 
 			log.Error(err)
 			return nil, err
 		}
-
-		t.Cities = make([]domain.City, 0)
 		result = append(result, t)
 	}
 
 	return result, nil
 }
 
-func (m *postgresStateRepository) Fetch(ctx context.Context) ([]*domain.State, error) {
-	query := `SELECT id, name, abbreviation, updated_at, created_at FROM states ORDER BY created_at`
+func (m *postgresCityRepository) Fetch(ctx context.Context) ([]*domain.City, error) {
+
+	query := `SELECT id,name,abbreviation, updated_at, created_at
+  						FROM states ORDER BY created_at`
 
 	res, err := m.fetch(ctx, query)
 	if err != nil {
@@ -72,22 +74,23 @@ func (m *postgresStateRepository) Fetch(ctx context.Context) ([]*domain.State, e
 	}
 	fmt.Printf("%#v\n", res)
 	return res, err
+
 }
 
-// func (m *postgresStateRepository) GetByID(ctx context.Context, id int64) (*domain.State, error) {
-// 	return nil, nil
-// }
+func (m *postgresCityRepository) GetByID(ctx context.Context, id int64) (*domain.City, error) {
+	return nil, nil
+}
 
-// func (m *postgresStateRepository) Save(ctx context.Context, a *domain.State) error {
-// 	return nil
-// }
+func (m *postgresCityRepository) Save(ctx context.Context, a *domain.City) error {
+	return nil
+}
 
-// func (m *postgresStateRepository) Delete(ctx context.Context, id int64) error {
-// 	return nil
-// }
-// func (m *postgresStateRepository) Update(ctx context.Context, ar *domain.State) error {
-// 	return nil
-// }
+func (m *postgresCityRepository) Delete(ctx context.Context, id int64) error {
+	return nil
+}
+func (m *postgresCityRepository) Update(ctx context.Context, ar *domain.City) error {
+	return nil
+}
 
 // DecodeCursor -
 func DecodeCursor(encodedTime string) (time.Time, error) {

@@ -16,9 +16,5 @@ spec:
       targetPort: 4000
       protocol: TCP
       name: tinyestate-api-debug-port
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: tinyestate-api-db-port
   selector:
     app: tinyestate-api

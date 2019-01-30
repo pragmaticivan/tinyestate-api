@@ -27,37 +27,37 @@ func TestFeatch(t *testing.T) {
 
 	mockStates := []domain.State{
 		domain.State{
-			ID:        "1asdgd7agds7",
-			Name:      "California",
-			Acronym:   "CA",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
+			ID:           1,
+			Name:         "California",
+			Abbreviation: "CA",
+			UpdatedAt:    time.Now(),
+			CreatedAt:    time.Now(),
 		},
 		domain.State{
-			ID:        "2asdgd7agds7",
-			Name:      "Texas",
-			Acronym:   "TX",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
+			ID:           2,
+			Name:         "Texas",
+			Abbreviation: "TX",
+			UpdatedAt:    time.Now(),
+			CreatedAt:    time.Now(),
 		},
 		domain.State{
-			ID:        "3asdgd7agds7",
-			Name:      "Washington",
-			Acronym:   "WA",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
+			ID:           3,
+			Name:         "Washington",
+			Abbreviation: "WA",
+			UpdatedAt:    time.Now(),
+			CreatedAt:    time.Now(),
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "acronym", "updated_at", "created_at"}).
-		AddRow(mockStates[0].ID, mockStates[0].Name, mockStates[0].Acronym,
+	rows := sqlmock.NewRows([]string{"id", "name", "abbreviation", "updated_at", "created_at"}).
+		AddRow(mockStates[0].ID, mockStates[0].Name, mockStates[0].Abbreviation,
 			mockStates[0].UpdatedAt, mockStates[0].CreatedAt).
-		AddRow(mockStates[1].ID, mockStates[1].Name, mockStates[1].Acronym,
+		AddRow(mockStates[1].ID, mockStates[1].Name, mockStates[1].Abbreviation,
 			mockStates[1].UpdatedAt, mockStates[1].CreatedAt).
-		AddRow(mockStates[2].ID, mockStates[2].Name, mockStates[2].Acronym,
+		AddRow(mockStates[2].ID, mockStates[2].Name, mockStates[2].Abbreviation,
 			mockStates[2].UpdatedAt, mockStates[2].CreatedAt)
 
-	query := "SELECT id,name,acronym, updated_at, created_at FROM states WHERE created_at > \\? ORDER BY created_at LIMIT \\?"
+	query := "SELECT id,name,abbreviation, updated_at, created_at FROM states ORDER BY created_at"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := stateRepo.NewPostgresStateRepository(db)

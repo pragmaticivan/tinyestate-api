@@ -27,23 +27,5 @@ spec:
             secretKeyRef:
               name: tinyestate-api-secret
               key: db_password
-      - name: tinyestate-api-db
-        image: postgres
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: tinyestate-api-secret
-              key: db_password
-        - name: POSTGRES_USER
-          value: tinyestate
-        volumeMounts:
-        - name: tinyestate-api-db-storage
-          mountPath: /var/lib/postgresql
-      volumes:
-      - name: tinyestate-api-db-storage
-        persistentVolumeClaim:
-          claimName: tinyestate-api-db-storage-claim
-
+        - name: DB_HOST
+          value: "tinyestate-db-service"

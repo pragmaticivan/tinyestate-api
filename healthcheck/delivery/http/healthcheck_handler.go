@@ -22,7 +22,6 @@ func NewHealthcheckHTTPHandler(r *mux.Router) {
 }
 
 func (a *HTTPHealthcheckHandler) Healthcheck(w http.ResponseWriter, r *http.Request) {
-
 	response, _ := json.Marshal(domain.HealthCheck{Status: "Ok"})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
