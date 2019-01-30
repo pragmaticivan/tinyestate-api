@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"time"
 
-	"github.com/pragmaticivan/tinyestate-api/model"
+	"github.com/pragmaticivan/tinyestate-api/domain"
 	"github.com/pragmaticivan/tinyestate-api/state"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,7 +25,7 @@ func NewPostgresStateRepository(Conn *sql.DB) state.Repository {
 	return &postgresStateRepository{Conn}
 }
 
-func (m *postgresStateRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*model.State, error) {
+func (m *postgresStateRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*domain.State, error) {
 
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 
@@ -39,9 +40,9 @@ func (m *postgresStateRepository) fetch(ctx context.Context, query string, args 
 			log.Fatal(err)
 		}
 	}()
-	result := make([]*model.State, 0)
+	result := make([]*domain.State, 0)
 	for rows.Next() {
-		t := new(model.State)
+		t := new(domain.State)
 		err = rows.Scan(
 			&t.ID,
 			&t.Name,
@@ -60,39 +61,32 @@ func (m *postgresStateRepository) fetch(ctx context.Context, query string, args 
 	return result, nil
 }
 
-func (m *postgresStateRepository) Fetch(ctx context.Context, cursor string, num int64) ([]*model.State, string, error) {
+func (m *postgresStateRepository) Fetch(ctx context.Context) ([]*domain.State, error) {
 
 	query := `SELECT id,name,acronym, updated_at, created_at
-  						FROM states WHERE created_at > ? ORDER BY created_at LIMIT ? `
+  						FROM states ORDER BY created_at`
 
-	decodedCursor, err := DecodeCursor(cursor)
-	if err != nil && cursor != "" {
-		return nil, "", model.ErrBadParamInput
-	}
-	res, err := m.fetch(ctx, query, decodedCursor, num)
+	res, err := m.fetch(ctx, query)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	nextCursor := ""
-	if len(res) == int(num) {
-		nextCursor = EncodeCursor(res[len(res)-1].CreatedAt)
-	}
-	return res, nextCursor, err
+	fmt.Printf("%#v\n", res)
+	return res, err
 
 }
 
-func (m *postgresStateRepository) GetByID(ctx context.Context, id int64) (*model.State, error) {
+func (m *postgresStateRepository) GetByID(ctx context.Context, id int64) (*domain.State, error) {
 	return nil, nil
 }
 
-func (m *postgresStateRepository) Save(ctx context.Context, a *model.State) error {
+func (m *postgresStateRepository) Save(ctx context.Context, a *domain.State) error {
 	return nil
 }
 
 func (m *postgresStateRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
-func (m *postgresStateRepository) Update(ctx context.Context, ar *model.State) error {
+func (m *postgresStateRepository) Update(ctx context.Context, ar *domain.State) error {
 	return nil
 }
 

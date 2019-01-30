@@ -1,4 +1,6 @@
 tinyestate-api
 Dockerfile
+Dockerfile.dev
 kubernetes
 .gitignore
+.vscode

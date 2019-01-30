@@ -1,4 +1,4 @@
-package model
+package domain
 
 // HealthCheck - status
 type HealthCheck struct {

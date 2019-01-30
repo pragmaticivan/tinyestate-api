@@ -1,0 +1,42 @@
+FROM golang:1.11.5-alpine as builder
+
+# Install the Certificate-Authority certificates for the app to be able to make
+# calls to HTTPS endpoints.
+RUN apk add --no-cache ca-certificates git
+
+ENV CGO_ENABLED=0 GOFLAGS=-mod=vendor
+
+# Compile Delve
+RUN go get github.com/derekparker/delve/cmd/dlv
+
+# Set the working directory outside $GOPATH to enable the support for modules.
+WORKDIR /src
+
+# Import the code from the context.
+COPY ./ ./
+
+# Build the executable to `/app`. Mark the build as statically linked.
+RUN go build \
+  -gcflags "all=-N -l"  \
+-o /app .
+
+# Final stage: the running container.
+FROM alpine:3.7 AS final
+
+RUN apk add --no-cache libc6-compat
+
+# Import the Certificate-Authority certificates for enabling HTTPS.
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Import the compiled executable from the second stage.
+COPY --from=builder /app /app
+COPY --from=builder /go/bin/dlv /
+
+# Declare the port on which the webserver will be exposed.
+# As we're going to run the executable as an unprivileged user, we can't bind
+# to ports below 1024.
+EXPOSE 3000 4000 2345
+
+# Run the compiled binary.
+# ENTRYPOINT ["/app"]
+CMD ["/dlv", "--listen=:2345", "--log=true", "--headless=true", "--api-version=2", "exec", "/app"]

@@ -22,6 +22,7 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/swaggo/swag v1.4.0 // indirect
 	github.com/urfave/cli v1.20.0 // indirect
+	github.com/urfave/negroni v1.0.0
 	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/tools v0.0.0-20190129211623-9cefa6771f8f // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v2 v2.0.0-20180914054222-c19298f520d0

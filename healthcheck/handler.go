@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/pragmaticivan/tinyestate-api/model"
+	"github.com/pragmaticivan/tinyestate-api/domain"
 )
 
 // Handler healthcheck request
 func Handler(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, 200, model.HealthCheck{Status: "Ok"})
+	respondWithJSON(w, 200, domain.HealthCheck{Status: "Ok"})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {

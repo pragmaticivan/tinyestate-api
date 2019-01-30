@@ -1,2 +1,3 @@
 tinyestate-api
-secret.yml
+kubernetes/secret.yml
+.vscode

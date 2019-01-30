@@ -11,11 +11,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
-	"github.com/pragmaticivan/tinyestate-api/healthcheck"
+	"github.com/pragmaticivan/tinyestate-api/adapters/web"
 	"github.com/pragmaticivan/tinyestate-api/schema"
+	_stateRepository "github.com/pragmaticivan/tinyestate-api/state/repository"
+	_stateUsecase "github.com/pragmaticivan/tinyestate-api/state/usecase"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -113,11 +114,13 @@ func main() {
 		log.Infof("main : Debug Listener closed : %v", debug.ListenAndServe())
 	}()
 
-	// Start API Service
+	// Temporarely load dependencies here
+	timeoutContext := time.Duration(10000 * 5)
+	stateRepository := _stateRepository.NewPostgresStateRepository(dbConn)
+	stateUsecase := _stateUsecase.NewStateUsecase(stateRepository, timeoutContext)
 
-	r := mux.NewRouter()
-	r.HandleFunc("/_health", healthcheck.Handler).Methods("GET")
-	r.Use(loggingMiddleware)
+	// Start API Service
+	r := web.NewWebAdapter(stateUsecase)
 
 	api := http.Server{
 		Addr:           cfg.Web.APIHost + ":" + cfg.Web.APIPort,

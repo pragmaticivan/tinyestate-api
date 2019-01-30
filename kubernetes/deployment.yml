@@ -39,4 +39,11 @@ spec:
               key: db_password
         - name: POSTGRES_USER
           value: tinyestate
+        volumeMounts:
+        - name: tinyestate-api-db-storage
+          mountPath: /var/lib/postgresql
+      volumes:
+      - name: tinyestate-api-db-storage
+        persistentVolumeClaim:
+          claimName: tinyestate-api-db-storage-claim
 

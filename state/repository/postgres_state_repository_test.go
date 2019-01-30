@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pragmaticivan/tinyestate-api/model"
+	"github.com/pragmaticivan/tinyestate-api/domain"
 	stateRepo "github.com/pragmaticivan/tinyestate-api/state/repository"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -25,22 +25,22 @@ func TestFeatch(t *testing.T) {
 		}
 	}()
 
-	mockStates := []model.State{
-		model.State{
+	mockStates := []domain.State{
+		domain.State{
 			ID:        "1asdgd7agds7",
 			Name:      "California",
 			Acronym:   "CA",
 			UpdatedAt: time.Now(),
 			CreatedAt: time.Now(),
 		},
-		model.State{
+		domain.State{
 			ID:        "2asdgd7agds7",
 			Name:      "Texas",
 			Acronym:   "TX",
 			UpdatedAt: time.Now(),
 			CreatedAt: time.Now(),
 		},
-		model.State{
+		domain.State{
 			ID:        "3asdgd7agds7",
 			Name:      "Washington",
 			Acronym:   "WA",
@@ -61,10 +61,7 @@ func TestFeatch(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := stateRepo.NewPostgresStateRepository(db)
-	cursor := stateRepo.EncodeCursor(mockStates[2].CreatedAt)
-	num := int64(3)
-	list, nextCursor, err := a.Fetch(context.TODO(), cursor, num)
-	assert.NotEmpty(t, nextCursor)
+	list, err := a.Fetch(context.TODO())
 	assert.NoError(t, err)
 	assert.Len(t, list, 3)
 }
