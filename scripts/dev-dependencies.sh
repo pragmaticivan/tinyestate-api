@@ -22,8 +22,8 @@ function passGoDevDependencies() {
   echo "golint https://github.com/golang/lint/golint"
   go get -u github.com/golang/lint/golint
 
-  echo "megacheck https://github.com/dominikh/go-tools/tree/master/cmd/megacheck"
-  go get -u honnef.co/go/tools/cmd/megacheck
+  echo "staticcheck honnef.co/go/tools/cmd/staticcheck"
+  go get -u honnef.co/go/tools/cmd/staticcheck
 
   echo "swag github.com/swaggo/swag/cmd/swag"
   go get -u github.com/swaggo/swag/cmd/swag

@@ -49,7 +49,7 @@ function runTests() {
   echo "Examining source code against code defect."
   go vet $(go list ./...)
   echo "Checking if code can be simplified or can be improved."
-  megacheck ./...
+  staticcheck ./...
   echo "Running tests (may take a while)."
 
   go test $(go list ./... | grep -v /integration$) -race
