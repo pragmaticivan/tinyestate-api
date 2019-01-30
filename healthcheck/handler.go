@@ -2,22 +2,23 @@ package healthcheck
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
-)
 
-// HealthCheck - status
-type HealthCheck struct {
-	Status string `json:"status"`
-}
+	"github.com/pragmaticivan/tinyestate-api/model"
+)
 
 // Handler healthcheck request
 func Handler(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, 200, HealthCheck{Status: "Ok"})
+	respondWithJSON(w, 200, model.HealthCheck{Status: "Ok"})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	_, err := w.Write(response)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

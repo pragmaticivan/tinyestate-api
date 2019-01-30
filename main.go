@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,13 +13,18 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
+	_ "github.com/lib/pq"
 	"github.com/pragmaticivan/tinyestate-api/healthcheck"
+	"github.com/pragmaticivan/tinyestate-api/schema"
 	log "github.com/sirupsen/logrus"
 )
 
 var build = "develop"
 
 func main() {
+
+	flag.Parse()
+
 	var cfg struct {
 		Web struct {
 			APIPort         string        `default:"3000" envconfig:"PORT"`
@@ -26,6 +34,13 @@ func main() {
 			ReadTimeout     time.Duration `default:"5s" envconfig:"READ_TIMEOUT"`
 			WriteTimeout    time.Duration `default:"5s" envconfig:"WRITE_TIMEOUT"`
 			ShutdownTimeout time.Duration `default:"5s" envconfig:"SHUTDOWN_TIMEOUT"`
+		}
+		DB struct {
+			DBHost string `default:"localhost" envconfig:"DB_HOST"`
+			DBPort string `default:"5432" envconfig:"DB_PORT"`
+			DBUser string `default:"tinyestate" envconfig:"DB_USER"`
+			DBPass string `default:"" envconfig:"DB_PASS"`
+			DBName string `default:"tinyestate" envconfig:"DB_NAME"`
 		}
 	}
 
@@ -37,6 +52,46 @@ func main() {
 	defer log.Infoln("main : Completed")
 
 	// Start DB
+	connection := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable", cfg.DB.DBHost, cfg.DB.DBPort, cfg.DB.DBUser, cfg.DB.DBPass, cfg.DB.DBName)
+
+	dbConn, err := sql.Open("postgres", connection)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = dbConn.Ping()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	defer func() {
+		err := dbConn.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// Start migration or seed
+	switch flag.Arg(0) {
+	case "migrate":
+		if err := schema.Migrate(dbConn); err != nil {
+			log.Println("error applying migrations", err)
+			os.Exit(1)
+		}
+		log.Println("Migrations complete")
+		return
+
+	case "seed":
+		if err := schema.Seed(dbConn); err != nil {
+			log.Println("error seeding database", err)
+			os.Exit(1)
+		}
+		log.Println("Seed data complete")
+		return
+	}
 
 	// Start Debug Service
 
