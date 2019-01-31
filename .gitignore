@@ -1,3 +1,4 @@
 tinyestate-api
 kubernetes/secret.yml
 .vscode
+.cover
