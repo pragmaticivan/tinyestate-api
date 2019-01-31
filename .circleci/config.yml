@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.11.5
-    working_directory: /go/src/github.com/pragmaticivan/tinyestate-api
     steps:
       - checkout
       - run: make dev-dependencies
