@@ -14,6 +14,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/pragmaticivan/tinyestate-api/adapters/web"
+	_cityRepository "github.com/pragmaticivan/tinyestate-api/city/repository"
+	_cityUsecase "github.com/pragmaticivan/tinyestate-api/city/usecase"
 	"github.com/pragmaticivan/tinyestate-api/schema"
 	_stateRepository "github.com/pragmaticivan/tinyestate-api/state/repository"
 	_stateUsecase "github.com/pragmaticivan/tinyestate-api/state/usecase"
@@ -116,11 +118,13 @@ func main() {
 
 	// Temporarely load dependencies here
 	timeoutContext := time.Duration(10000 * 5)
+	cityRepository := _cityRepository.NewPostgresCityRepository(dbConn)
 	stateRepository := _stateRepository.NewPostgresStateRepository(dbConn)
 	stateUsecase := _stateUsecase.NewStateUsecase(stateRepository, timeoutContext)
+	cityUsecase := _cityUsecase.NewCityUsecase(cityRepository, timeoutContext)
 
 	// Start API Service
-	r := web.NewWebAdapter(stateUsecase)
+	r := web.NewWebAdapter(stateUsecase, cityUsecase)
 
 	api := http.Server{
 		Addr:           cfg.Web.APIHost + ":" + cfg.Web.APIPort,
@@ -171,13 +175,4 @@ func main() {
 		}
 	}
 
-}
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
-		log.Infof(r.RequestURI)
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
 }

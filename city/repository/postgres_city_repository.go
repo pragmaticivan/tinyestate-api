@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"time"
 
 	"github.com/pragmaticivan/tinyestate-api/city"
@@ -64,32 +63,21 @@ func (m *postgresCityRepository) fetch(ctx context.Context, query string, args .
 }
 
 func (m *postgresCityRepository) Fetch(ctx context.Context) ([]*domain.City, error) {
-
-	query := `SELECT id,name,abbreviation, updated_at, created_at
-  						FROM states ORDER BY created_at`
-
+	query := `SELECT id, name, allows_on_wheels, allows_on_foundation, requires_care_giver, created_at, updated_at FROM cities ORDER BY created_at`
 	res, err := m.fetch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%#v\n", res)
 	return res, err
-
 }
 
-func (m *postgresCityRepository) GetByID(ctx context.Context, id int64) (*domain.City, error) {
-	return nil, nil
-}
-
-func (m *postgresCityRepository) Save(ctx context.Context, a *domain.City) error {
-	return nil
-}
-
-func (m *postgresCityRepository) Delete(ctx context.Context, id int64) error {
-	return nil
-}
-func (m *postgresCityRepository) Update(ctx context.Context, ar *domain.City) error {
-	return nil
+func (m *postgresCityRepository) GetByStateID(ctx context.Context, id int64) ([]*domain.City, error) {
+	query := `SELECT id, name, allows_on_wheels, allows_on_foundation, requires_care_giver, updated_at, created_at FROM cities WHERE state_id=$1 ORDER BY created_at`
+	res, err := m.fetch(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
 }
 
 // DecodeCursor -

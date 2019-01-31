@@ -9,19 +9,20 @@ import (
 	"github.com/pragmaticivan/tinyestate-api/domain"
 )
 
-// HTTPHealthcheckHandler  represent the httphandler for healthcheck
-type HTTPHealthcheckHandler struct {
+// HealthcheckHandler represent the httphandler for healthcheck
+type HealthcheckHandler struct {
 }
 
-// NewHealthcheckHttpHandler -
+// NewHealthcheckHTTPHandler -
 func NewHealthcheckHTTPHandler(r *mux.Router) {
-	handler := &HTTPHealthcheckHandler{}
+	handler := &HealthcheckHandler{}
 	r.HandleFunc("/_health", handler.Healthcheck).Methods("GET")
 	r.HandleFunc("/", handler.Healthcheck).Methods("GET")
 
 }
 
-func (a *HTTPHealthcheckHandler) Healthcheck(w http.ResponseWriter, r *http.Request) {
+// Healthcheck -
+func (a *HealthcheckHandler) Healthcheck(w http.ResponseWriter, r *http.Request) {
 	response, _ := json.Marshal(domain.HealthCheck{Status: "Ok"})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

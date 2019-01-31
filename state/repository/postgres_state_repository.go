@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"time"
 
 	"github.com/pragmaticivan/tinyestate-api/domain"
@@ -70,24 +69,8 @@ func (m *postgresStateRepository) Fetch(ctx context.Context) ([]*domain.State, e
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%#v\n", res)
 	return res, err
 }
-
-// func (m *postgresStateRepository) GetByID(ctx context.Context, id int64) (*domain.State, error) {
-// 	return nil, nil
-// }
-
-// func (m *postgresStateRepository) Save(ctx context.Context, a *domain.State) error {
-// 	return nil
-// }
-
-// func (m *postgresStateRepository) Delete(ctx context.Context, id int64) error {
-// 	return nil
-// }
-// func (m *postgresStateRepository) Update(ctx context.Context, ar *domain.State) error {
-// 	return nil
-// }
 
 // DecodeCursor -
 func DecodeCursor(encodedTime string) (time.Time, error) {

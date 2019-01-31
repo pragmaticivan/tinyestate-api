@@ -57,7 +57,7 @@ func TestFeatch(t *testing.T) {
 		AddRow(mockStates[2].ID, mockStates[2].Name, mockStates[2].Abbreviation,
 			mockStates[2].UpdatedAt, mockStates[2].CreatedAt)
 
-	query := "SELECT id,name,abbreviation, updated_at, created_at FROM states ORDER BY created_at"
+	query := "SELECT id, name, abbreviation, updated_at, created_at FROM states ORDER BY created_at"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := stateRepo.NewPostgresStateRepository(db)
