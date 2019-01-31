@@ -8,3 +8,8 @@ jobs:
     working_directory: /go/src/github.com/pragmaticivan/tinyestate-api
     steps:
       - checkout
+      - run: make dev-dependencies
+      - run:
+          name: Run unit tests
+          command: |
+            make test
