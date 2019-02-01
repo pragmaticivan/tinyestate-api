@@ -14,6 +14,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/pragmaticivan/tinyestate-api/adapters/web"
+	_canonicalRepository "github.com/pragmaticivan/tinyestate-api/canonical/repository"
+	_canonicalUsecase "github.com/pragmaticivan/tinyestate-api/canonical/usecase"
 	_cityRepository "github.com/pragmaticivan/tinyestate-api/city/repository"
 	_cityUsecase "github.com/pragmaticivan/tinyestate-api/city/usecase"
 	"github.com/pragmaticivan/tinyestate-api/schema"
@@ -120,11 +122,13 @@ func main() {
 	timeoutContext := time.Duration(10000 * 5)
 	cityRepository := _cityRepository.NewPostgresCityRepository(dbConn)
 	stateRepository := _stateRepository.NewPostgresStateRepository(dbConn)
+	canonicalRepository := _canonicalRepository.NewPostgresCanonicalRepository(dbConn)
 	stateUsecase := _stateUsecase.NewStateUsecase(stateRepository, timeoutContext)
 	cityUsecase := _cityUsecase.NewCityUsecase(cityRepository, timeoutContext)
+	canonicalUsecase := _canonicalUsecase.NewCanonicalUsecase(canonicalRepository, timeoutContext)
 
 	// Start API Service
-	r := web.NewWebAdapter(stateUsecase, cityUsecase)
+	r := web.NewWebAdapter(stateUsecase, cityUsecase, canonicalUsecase)
 
 	api := http.Server{
 		Addr:           cfg.Web.APIHost + ":" + cfg.Web.APIPort,
