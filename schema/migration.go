@@ -51,4 +51,15 @@ var migrations = []darwin.Migration{
 					FOREIGN KEY (state_id) REFERENCES states (id)
 				);`,
 	},
+	{
+		Version:     4,
+		Description: "Drop state_id fk from canonicals",
+		Script:      `ALTER TABLE canonicals DROP COLUMN IF EXISTS state_id`,
+	},
+	{
+		Version:     5,
+		Description: "Change latitude and longitude to default null",
+		Script: `ALTER TABLE canonicals ALTER COLUMN latitude DROP NOT NULL;
+					  ALTER TABLE canonicals ALTER COLUMN longitude DROP NOT NULL;`,
+	},
 }

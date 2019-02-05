@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/pragmaticivan/tinyestate-api/canonical"
 	"github.com/pragmaticivan/tinyestate-api/domain"
@@ -101,22 +102,39 @@ func (m *postgresCanonicalRepository) FetchByCanonical(ctx context.Context, cano
 }
 
 func (m *postgresCanonicalRepository) Create(ctx context.Context, c *domain.Canonical) (*domain.Canonical, error) {
-	query := `INSERT INTO canonicals (name, canonical, allows_on_wheels, allows_on_foundation, requires_care_giver, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO canonicals (name, canonical, allows_on_wheels, allows_on_foundation, requires_care_giver, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`
+
+	var lastInsertID int64
+
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
-
 		return nil, err
 	}
 
-	res, err := stmt.ExecContext(ctx, c.Name, c.Canonical, c.AllowsOnWheels, c.AllowsOnFoundation, c.RequiresCareGiver, c.UpdatedAt, c.CreatedAt)
-	if err != nil {
+	c.CreatedAt = time.Now()
+	c.UpdatedAt = time.Now()
 
-		return nil, err
-	}
-	LastInsertId, err := res.LastInsertId()
+	rows, err := stmt.QueryContext(ctx, c.Name, c.Canonical, c.AllowsOnWheels, c.AllowsOnFoundation, c.RequiresCareGiver, c.CreatedAt, c.UpdatedAt)
+
 	if err != nil {
 		return nil, err
 	}
-	c.ID = LastInsertId
+
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	for rows.Next() {
+		err = rows.Scan(&lastInsertID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	c.ID = lastInsertID
+
 	return c, nil
 }

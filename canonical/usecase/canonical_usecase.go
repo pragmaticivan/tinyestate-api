@@ -56,3 +56,14 @@ func (s *canonicalUsecase) FetchByCanonical(c context.Context, canonical string)
 
 	return data, nil
 }
+
+func (s *canonicalUsecase) Create(c context.Context, can *domain.Canonical) (*domain.Canonical, error) {
+	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
+	defer cancel()
+
+	data, err := s.canonicalRepo.Create(ctx, can)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

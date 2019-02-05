@@ -11,4 +11,5 @@ type Usecase interface {
 	Fetch(ctx context.Context) ([]*domain.Canonical, error)
 	FetchByID(ctx context.Context, id int64) (res *domain.Canonical, err error)
 	FetchByCanonical(ctx context.Context, canonical string) (res *domain.Canonical, err error)
+	Create(ctx context.Context, canonical *domain.Canonical) (res *domain.Canonical, err error)
 }

@@ -31,7 +31,7 @@ func TestFetch(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	a := repository.NewPostgresCityRepository(db)
+	a := repository.NewPostgresCanonicalRepository(db)
 
 	dataCities, err := a.Fetch(context.TODO())
 	assert.NoError(t, err)

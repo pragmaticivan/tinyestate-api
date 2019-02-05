@@ -16,8 +16,6 @@ import (
 	"github.com/pragmaticivan/tinyestate-api/adapters/web"
 	_canonicalRepository "github.com/pragmaticivan/tinyestate-api/canonical/repository"
 	_canonicalUsecase "github.com/pragmaticivan/tinyestate-api/canonical/usecase"
-	_cityRepository "github.com/pragmaticivan/tinyestate-api/city/repository"
-	_cityUsecase "github.com/pragmaticivan/tinyestate-api/city/usecase"
 	"github.com/pragmaticivan/tinyestate-api/schema"
 	_stateRepository "github.com/pragmaticivan/tinyestate-api/state/repository"
 	_stateUsecase "github.com/pragmaticivan/tinyestate-api/state/usecase"
@@ -119,16 +117,14 @@ func main() {
 	}()
 
 	// Temporarely load dependencies here
-	timeoutContext := time.Duration(10000 * 5)
-	cityRepository := _cityRepository.NewPostgresCityRepository(dbConn)
+	timeoutContext := 5 * time.Second
 	stateRepository := _stateRepository.NewPostgresStateRepository(dbConn)
 	canonicalRepository := _canonicalRepository.NewPostgresCanonicalRepository(dbConn)
 	stateUsecase := _stateUsecase.NewStateUsecase(stateRepository, timeoutContext)
-	cityUsecase := _cityUsecase.NewCityUsecase(cityRepository, timeoutContext)
 	canonicalUsecase := _canonicalUsecase.NewCanonicalUsecase(canonicalRepository, timeoutContext)
 
 	// Start API Service
-	r := web.NewWebAdapter(stateUsecase, cityUsecase, canonicalUsecase)
+	r := web.NewWebAdapter(stateUsecase, canonicalUsecase)
 
 	api := http.Server{
 		Addr:           cfg.Web.APIHost + ":" + cfg.Web.APIPort,

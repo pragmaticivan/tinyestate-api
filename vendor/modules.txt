@@ -1,5 +1,7 @@
 # github.com/GuiaBolso/darwin v0.0.0-20170210191649-86919dfcf808
 github.com/GuiaBolso/darwin
+# github.com/Masterminds/squirrel v1.1.0
+github.com/Masterminds/squirrel
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/gorilla/mux v1.7.0
@@ -8,6 +10,10 @@ github.com/gorilla/mux
 github.com/kelseyhightower/envconfig
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/lann/builder v0.0.0-20180802200727-47ae307949d0
+github.com/lann/builder
+# github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0
+github.com/lann/ps
 # github.com/lib/pq v1.0.0
 github.com/lib/pq
 github.com/lib/pq/oid
@@ -24,5 +30,7 @@ golang.org/x/crypto/ssh/terminal
 # golang.org/x/sys v0.0.0-20180905080454-ebe1bf3edb33
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+# gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
+gopkg.in/DATA-DOG/go-sqlmock.v1
 # gopkg.in/DATA-DOG/go-sqlmock.v2 v2.0.0-20180914054222-c19298f520d0
 gopkg.in/DATA-DOG/go-sqlmock.v2
